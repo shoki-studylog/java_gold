@@ -187,12 +187,145 @@ public class StreamAPI {
         .peek(e -> System.out.println("after map : " + e))
         .collect(Collectors.toList());
 
+        System.out.println("toList()メソッド実装例");
+        //String型のストリームをリストに変換する
+        Stream<String> tolist_stream = Stream.of("naoki","ami","akko");
+        List<String> tolist_list = tolist_stream.collect(Collectors.toList());
+        System.out.println(tolist_list);
+
+        System.out.println("joining()メソッド実装例");
+        //Streamの要素を連結した文字列を返す
+        Stream<String> joining_stream = Stream.of("naoki","ami","akko");
+        String joining_string = joining_stream.collect(Collectors.joining(" | "));
+        System.out.println(joining_string);
+
+        System.out.println("summingInt()メソッド実装例");
+        //Streamの要素の文字数の合計を取得する
+        Stream<String> summingInt_stream = Stream.of("naoki","ami","akko");
+        Integer summingInt_sum = summingInt_stream.collect(
+            Collectors.summingInt(x -> x.length())
+        );
+        System.out.println(summingInt_sum);
+
+        System.out.println("averagingInt()メソッド実装例");
+        //averagingXXX()メソッドは全て戻り値がDouble型となる
+        Stream<String> averagingInt_stream = Stream.of("naoki","ami","akko");
+        Double averagintInt_average = averagingInt_stream.collect(
+            Collectors.averagingInt(x -> x.length())
+        );
+        System.out.println(averagintInt_average);
+
+        System.out.println("toSet()メソッド実装例");
+        Stream<String> toset_stream = Stream.of("naoki","ami","akko");
+        Set<String> toset_set = toset_stream.collect(
+            Collectors.toSet()
+        );
+        System.out.println(toset_set);
+
+
+        System.out.println("toMap()メソッド実装例");
+        //構文1(キーとバリューを指定してマップを生成する)        
+        System.out.println("構文1");
+        Stream<String> tomap_stream = Stream.of("naoki","ami","akko");
+        Map<String,String> tomap_map = tomap_stream.collect(Collectors.toMap(x -> x, String::toUpperCase));
+        System.out.println(tomap_map);
+
+        //構文2(キーが重複した場合に指定したマージ処理を実行する（今回は、コロンで結合する）)
+        System.out.println("構文2");
+        Stream<String> tomap_stream3 = Stream.of("nao","ami","akko");
+        Map<Integer, String> tomap_map2 = tomap_stream3.collect(
+            Collectors.toMap(String::length,s -> s,(s1,s2) -> s1 + " : " + s2)
+        );
+        System.out.println(tomap_map2);
+        System.out.println(tomap_map2.getClass());
+
+        //構文3(第3引数で指定したマージ処理を行った結果を格納するマップを生成することができる(今回はTreeMapに格納されている))
+        System.out.println("構文3");
+        Stream<String> tomap_stream4 = Stream.of("nao","ami","akko");
+        Map<Integer,String> tomap_map3 = tomap_stream4.collect(
+            Collectors.toMap(String::length,s -> s, (s1,s2) -> s1 + " : " + s2,TreeMap::new)
+        );
+        System.out.println(tomap_map3);
+        System.out.println(tomap_map3.getClass());
+
+        System.out.println("groupingBy()メソッド実装例");
+        //同じキーを返せば同じグループに属するという意味になる
+        System.out.println("構文1");
+        Stream<String> grouping_stream = Stream.of("belle","akko","ami","bob","nao");
+        Map<String,List<String>> grouping_map = grouping_stream.collect(
+            Collectors.groupingBy(s -> s.substring(0,1))
+        );
+        System.out.println(grouping_map);
+
+        System.out.println("構文2");
+        //構文2(第2引数にてグループ化したリストに対して行い対処理を指定する（今回はセットに変換している）)
+        Stream<String> grouping_stream2 = Stream.of("belle","akko","ami","bob","nao");
+        Map<String,Set<String>> grouping_map2 = grouping_stream2.collect(
+            Collectors.groupingBy(s -> s.substring(0,1),Collectors.toSet())
+        );
+        System.out.println(grouping_map2);
+
+        System.out.println("構文3");
+        //構文3(第2引数にて第3引数の処理結果を何に格納するのかを指定している（今回はTreeMapに格納している）)
+        Stream<String> grouping_stream3 = Stream.of("belle","akko","ami","bob","nao");
+        Map<String,String> grouping_map3 = grouping_stream3.collect(
+            Collectors.groupingBy(s -> s.substring(0,1),TreeMap::new,Collectors.joining())
+        );
+        System.out.println(grouping_map3);
+        System.out.println(grouping_map3.getClass());
+
+        System.out.println("partitioningBy()メソッド実装例");
+        //Streamの要素をbooleanで判定してグルーピングする
+        System.out.println("構文1");
+        Stream<Integer> partitioning_stream = Stream.of(3,5,7,9);
+        Map<Boolean, List<Integer>> partitioning_map = partitioning_stream.collect(
+            Collectors.partitioningBy(s -> s > 5)
+        );
+        System.out.println(partitioning_map);
+
+        System.out.println("構文2");
+        //構文2(グループ化したリストに対して処理を行う場合は、第二引数に処理を指定する（今回はグループ内の要素を合計している）)
+        Stream<Integer> partitioning_stream2 = Stream.of(3,5,7,9);
+        Map<Boolean,Integer> partitioning_map2 = partitioning_stream2.collect(
+            Collectors.partitioningBy(s -> s > 5,Collectors.summingInt(n -> n))
+        );
+        System.out.println(partitioning_map2);
+
+        System.out.println("mapping()メソッド実装例");
+        //map()メソッド例
+        System.out.println("map()メソッドの場合");
+        Stream<String> mapping_stream = Stream.of("ami","naoki","akko");
+        String mapping_string = mapping_stream.map(s -> s.toUpperCase())
+        .collect(Collectors.joining(" : "));
+        System.out.println(mapping_string);
+
+        //mapping()メソッド例
+        System.out.println("mapping()メソッドの場合");
+        Stream<String> mapping_stream2 = Stream.of("ami","naoki","akko");
+        String mapping_string2 = mapping_stream2.collect(
+            Collectors.mapping(s -> s.toUpperCase(),Collectors.joining(" : "))
+        );
+        System.out.println(mapping_string2);
+
+        System.out.println("minBy()メソッドの実装例");
+        Stream<String> min_stream = Stream.of("ami","naoki","akko");
+        Optional<String> min_result = min_stream.collect(
+            Collectors.minBy(Comparator.naturalOrder())
+        );
+        System.out.println(min_result.get());
+
+        System.out.println("maxBy()メソッドの実装例");
+        Stream<String> max_stream = Stream.of("101","105","106","203","205");
+        Map<String,Optional<String>> maxby_result= max_stream.collect(
+            Collectors.groupingBy(s -> s.substring(0,1),Collectors.maxBy(Comparator.naturalOrder()))
+        );
+        System.out.println(maxby_result);
 
 
 
 
 
 
-        
+
     }
 }
