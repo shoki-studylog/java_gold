@@ -1,5 +1,6 @@
 import java.util.Arrays;
 import java.util.function.BinaryOperator;
+import java.util.function.Predicate;
 import java.util.*;
 import java.util.stream.*;
 
@@ -98,6 +99,94 @@ public class StreamAPI {
 
         System.out.println("result: " + find_result.get());
         System.out.println("result2: " + find_result2.get());
+
+        System.out.println("orElse(),orElseGet(),orElseThrow()の実装例");
+
+        Stream<Double> orelse_stream = Stream.empty();
+        Optional<Double> orelse_result = orelse_stream.findFirst();
+
+        //値があれば値を返し、それ以外は引数を返す
+        System.out.println(orelse_result.orElse(0.0));
+        //値があれば値を返し、それ以外は引数のSupplinerの結果を返す（今回は結果がDouble型でないといけない）
+        System.out.println(orelse_result.orElseGet(() -> Math.random()));
+        //値があれば値を返し、それ以外は引数の例外をスローする
+        // System.out.println(orelse_result.orElseThrow(IllegalStateException::new));
+
+        System.out.println("filter(),distinct()メソッド実装例");
+        //先頭がaから始まる要素のみのストリームを返す
+        Stream<String> filter_stream = Stream.of("ami","naoki","akko");
+        filter_stream.filter(s -> s.startsWith("a"))
+                            .forEach(x -> System.out.print(x + " "));
+        System.out.println();
+
+        //値が空でない要素のみのストリームを返す
+        Stream<String> filter_stream2 = Stream.of("","naoki","akko");
+        filter_stream2.filter(Predicate.not(s -> s.isEmpty()))
+                            .forEach(x -> System.out.print(x + " "));
+        System.out.println();
+
+        //重複要素を除く要素で構成されたストリームを返す
+        Stream<String> distinct_stream = Stream.of("ami","naoki","akko","ami");
+        distinct_stream.distinct()
+        .forEach(x -> System.out.print(x + " "));
+        System.out.println();
+
+        System.out.println("map()メソッド実装例");
+        //String型ストリームからString型ストリームに変換
+        Stream<String> map_stream = Stream.of("naoki","akko","ami");
+        Stream<String> map_stream2 = map_stream.map(s -> s.toUpperCase());
+        map_stream2.forEach(x -> System.out.print(x + " "));
+        System.out.println();
+
+        Stream<String> map_stream3 = Stream.of("naoki","akko","ami");
+        Stream<Integer> map_stream4 = map_stream3.map(s -> s.length());
+        map_stream4.forEach(x -> System.out.print(x + " "));
+        System.out.println();
+
+        System.out.println("flatMap()メソッド実装例");
+
+        List<Integer> flatmap_data1 = Arrays.asList(10);
+        List<Integer> flatmap_data2 = Arrays.asList(20,30);
+        List<Integer> flatmap_data3 = Arrays.asList(40,50,60);
+
+        List<List<Integer>> datalist = Arrays.asList(flatmap_data1,flatmap_data2,flatmap_data3);
+
+        //mapを使用した例
+        datalist.stream()
+        .map(x -> x.stream())
+        .forEach(l -> {
+            l.forEach(x -> System.out.print(x + " "));
+        });
+        System.out.println();
+        //flatMapを使用した例
+        datalist.stream()
+        .flatMap(x -> x.stream())
+        .forEach(x -> System.out.print(x + " "));
+
+        System.out.println("sorted()メソッド実装例");
+
+        //引数無し（自然順序）
+        Stream.of("naoki","ami","akko")
+        .sorted()
+        .forEach(x -> System.out.print(x + " "));
+        
+        System.out.println();
+
+        //引数あり(Comparatorオブジェクト使用)
+        Stream.of("naoki","ami","akko")
+        .sorted(Comparator.reverseOrder())
+        .forEach(x -> System.out.print(x + " "));
+
+        System.out.println("peek()メソッド実装例");
+        List<String> peek_list = Stream.of("one","two","three","four","three")
+        .filter(s -> s.length() > 3)
+        .peek(e -> System.out.println("after filter : " + e ))
+        .distinct()
+        .peek(e -> System.out.println("after distinct : " + e))
+        .map(String::toUpperCase)
+        .peek(e -> System.out.println("after map : " + e))
+        .collect(Collectors.toList());
+
 
 
 
