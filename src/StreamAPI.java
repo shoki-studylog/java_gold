@@ -186,6 +186,7 @@ public class StreamAPI {
         .map(String::toUpperCase)
         .peek(e -> System.out.println("after map : " + e))
         .collect(Collectors.toList());
+        System.out.println(peek_list);
 
         System.out.println("toList()メソッド実装例");
         //String型のストリームをリストに変換する
